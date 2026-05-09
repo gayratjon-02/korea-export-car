@@ -99,6 +99,7 @@ export interface ICar {
   condition: CarCondition;
   mileage?: number;
   color?: string;
+  transmission?: string;
   description?: string;
   isActive: boolean;
   media: ICarMedia[];

@@ -205,6 +205,7 @@ function CalculatorContent() {
         </div>
       </div>
     </div>
+  );
 }
 
 export default function CalculatorPage() {
