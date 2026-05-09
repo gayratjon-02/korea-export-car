@@ -381,27 +381,27 @@ function CalculatorContent() {
                       <span className="text-muted font-medium flex items-center gap-2">
                         <Car size={18} /> Avtomobil narxi (FOB)
                       </span>
-                      <span className="font-bold text-lg text-primary">{formatCurrency(result.carPrice, 'USD')}</span>
+                      <span className="font-bold text-lg text-primary">{formatCurrency(result.carPrice.usd, 'USD')}</span>
                     </div>
 
                     <div className="flex justify-between items-center py-2 border-t border-dashed border-border">
                       <span className="text-muted font-medium flex items-center gap-2">
-                        <MapPin size={18} /> Logistika va Yetkazib berish
+                        <MapPin size={18} /> Logistika va Yetkazib berish ({result.shipping.route})
                       </span>
-                      <span className="font-bold text-lg text-primary">{formatCurrency(result.shipping, 'USD')}</span>
+                      <span className="font-bold text-lg text-primary">{formatCurrency(result.shipping.amount, 'USD')}</span>
                     </div>
 
                     <div className="flex justify-between items-center py-2 border-t border-dashed border-border">
                       <span className="text-muted font-medium">Davlat Bojxona To'lovlari <br/><span className="text-xs text-gray-400">(Boj, QQS, Aksiz, Util)</span></span>
                       <span className="font-bold text-lg text-primary">
-                        {formatCurrency(result.customsDuty + result.vat + result.excise + result.utilizationFee + result.registrationFee, 'USD')}
+                        {formatCurrency(result.customs.subtotal, 'USD')}
                       </span>
                     </div>
 
                     <div className="flex justify-between items-center py-2 border-t border-dashed border-border">
                       <span className="text-muted font-medium">KCI xizmati & Sug'urta</span>
                       <span className="font-bold text-lg text-primary">
-                        {formatCurrency(result.insurance + result.additionalFees, 'USD')}
+                        {formatCurrency(result.insurance.amount + (result.additionalCosts?.brokerFee || 0), 'USD')}
                       </span>
                     </div>
                   </div>
