@@ -13,7 +13,7 @@ interface CalculationInput {
   condition: string;
 }
 
-interface CalculationBreakdown {
+export interface CalculationBreakdown {
   carPrice: number;
   shipping: number;
   customsDuty: number;
