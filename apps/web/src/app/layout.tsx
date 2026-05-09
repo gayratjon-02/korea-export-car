@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import Header from '../components/layout/Header';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 
 export const metadata: Metadata = {
-  title: 'Korea Car Import | Premium Auto Exports to Central Asia',
-  description: 'Import premium cars from South Korea to Uzbekistan, Kazakhstan, Russia, and UAE. Direct access to dealer auctions, transparent pricing, and seamless shipping.',
+  title: 'Korea Car Import | Premium Auto',
+  description: 'Janubiy Koreyadan premium avtomobillarni import qilish portali',
 };
 
 export default function RootLayout({
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body>
         <Header />
         <main>{children}</main>
+        <Footer />
       </body>
     </html>
   );
