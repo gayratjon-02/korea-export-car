@@ -25,6 +25,8 @@ function CalculatorContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedCar, setSelectedCar] = useState<any>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchAttempted, setSearchAttempted] = useState(false);
 
   // URL flow
   const [url, setUrl] = useState('');
@@ -61,12 +63,17 @@ function CalculatorContent() {
   }, [initialCarId]);
 
   const searchCars = async (query: string) => {
+    setIsSearching(true);
     try {
       const { getCars } = await import('@/lib/api/cars');
       const res = await getCars({ q: query, limit: 5 });
       setSearchResults(res.items);
     } catch (err) {
       console.error(err);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+      setSearchAttempted(true);
     }
   };
 
@@ -169,6 +176,7 @@ function CalculatorContent() {
                               searchCars(e.target.value);
                             } else {
                               setSearchResults([]);
+                              setSearchAttempted(false);
                             }
                             if (selectedCar && selectedCar.id !== carId) setSelectedCar(null);
                           }}
@@ -178,33 +186,46 @@ function CalculatorContent() {
                       </div>
 
                       {/* Dropdown Results */}
-                      {searchResults.length > 0 && !selectedCar && (
-                        <div className="absolute z-20 w-[calc(100%-2.5rem)] ml-10 mt-2 bg-white border border-gray-100 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
-                          {searchResults.map((car: any) => (
-                            <button
-                              key={car.id}
-                              type="button"
-                              className="w-full text-left p-4 hover:bg-gray-50 border-b border-gray-50 flex gap-4 items-center transition-colors"
-                              onClick={() => {
-                                setSelectedCar(car);
-                                setCarId(car.id);
-                                setSearchQuery(`${car.year} ${car.brand} ${car.model}`);
-                                setSearchResults([]);
-                              }}
-                            >
-                              <div className="w-16 h-12 rounded overflow-hidden bg-gray-100 shrink-0">
-                                <img 
-                                  src={car.media?.[0]?.url || 'https://via.placeholder.com/100'} 
-                                  alt="Car" 
-                                  className="w-full h-full object-cover" 
-                                />
-                              </div>
-                              <div>
-                                <div className="font-bold text-gray-800">{car.year} {car.brand} {car.model}</div>
-                                <div className="text-sm text-gray-500 font-medium">{car.engineCc} cc • {formatCurrency(car.priceUsd, 'USD')}</div>
-                              </div>
-                            </button>
-                          ))}
+                      {searchQuery.length > 2 && !selectedCar && searchAttempted && (
+                        <div className="absolute z-20 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
+                          {isSearching ? (
+                            <div className="p-4 text-center text-gray-500 font-medium">Qidirilmoqda...</div>
+                          ) : searchResults.length > 0 ? (
+                            searchResults.map((car: any) => (
+                              <button
+                                key={car.id}
+                                type="button"
+                                className="w-full text-left p-4 hover:bg-gray-50 border-b border-gray-50 flex gap-4 items-center transition-colors"
+                                onClick={() => {
+                                  setSelectedCar(car);
+                                  setCarId(car.id);
+                                  setSearchQuery(`${car.year} ${car.brand} ${car.model}`);
+                                  setSearchResults([]);
+                                  setSearchAttempted(false);
+                                }}
+                              >
+                                <div className="w-16 h-12 rounded overflow-hidden bg-gray-100 shrink-0">
+                                  <img 
+                                    src={car.media?.[0]?.url || 'https://via.placeholder.com/100'} 
+                                    alt="Car" 
+                                    className="w-full h-full object-cover" 
+                                  />
+                                </div>
+                                <div>
+                                  <div className="font-bold text-gray-800">{car.year} {car.brand} {car.model}</div>
+                                  <div className="text-sm text-gray-500 font-medium">{car.engineCc} cc • {formatCurrency(car.priceUsd, 'USD')}</div>
+                                </div>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="p-6 text-center">
+                              <div className="text-gray-400 mb-2"><Car size={32} className="mx-auto opacity-50" /></div>
+                              <p className="font-bold text-gray-700">Mashina topilmadi</p>
+                              <p className="text-sm text-gray-500 mt-1">
+                                Bunday avtomobil katalogimizda yo'q. "Koreya saytlaridan URL" bo'limidan foydalanib ko'ring.
+                              </p>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

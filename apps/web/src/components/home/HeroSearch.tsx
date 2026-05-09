@@ -58,11 +58,11 @@ export default function HeroSearch() {
       </div>
 
       {/* Auto-suggest Results Dropdown */}
-      {(results.length > 0 || loading) && query.length >= 2 && (
+      {(results.length > 0 || loading || (query.length >= 2 && results.length === 0 && !loading)) && query.length >= 2 && (
         <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden text-left z-30">
-          {loading && results.length === 0 ? (
+          {loading ? (
             <div className="p-4 text-center text-gray-500 font-medium">Qidirilmoqda...</div>
-          ) : (
+          ) : results.length > 0 ? (
             <div className="flex flex-col">
               {results.map((car) => (
                 <button
@@ -87,6 +87,14 @@ export default function HeroSearch() {
                   </div>
                 </button>
               ))}
+            </div>
+          ) : (
+            <div className="p-6 text-center">
+              <div className="text-gray-400 mb-2"><Car size={32} className="mx-auto opacity-50" /></div>
+              <p className="font-bold text-gray-700">Mashina topilmadi</p>
+              <p className="text-sm text-gray-500 mt-1">
+                Afsuski, ushbu nomdagi avtomobil hozircha bizning katalogda yo'q. Boshqa so'z bilan qidirib ko'ring.
+              </p>
             </div>
           )}
         </div>
