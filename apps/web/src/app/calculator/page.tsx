@@ -230,22 +230,22 @@ function CalculatorContent() {
                       )}
                     </div>
                   ) : (
-                    <div className="form-group pl-10">
+                    <div className="form-group relative">
                       <label className="form-label text-muted mb-2">Encar, KBCha havolasi</label>
-                      <div className="flex gap-3">
+                      <div className="url-input-group">
                         <div className="relative flex-1">
-                          <LinkIcon size={20} className="absolute left-4 top-3.5 text-muted" />
+                          <LinkIcon size={20} className="absolute left-4 top-4 text-muted" />
                           <input 
                             type="url" 
                             value={url} 
                             onChange={e => setUrl(e.target.value)}
                             placeholder="https://www.encar.com/..." 
-                            className="form-input pl-12 py-3 shadow-sm"
+                            className="form-input pl-12 shadow-sm h-full"
                           />
                         </div>
                         <button 
                           type="button" 
-                          className="btn btn-primary px-6 rounded-lg font-bold shadow-md shrink-0"
+                          className="btn btn-primary rounded-lg font-bold shadow-md shrink-0 transition-transform active:scale-95"
                           onClick={handleParseUrl}
                           disabled={parsing || !url}
                         >
@@ -255,32 +255,32 @@ function CalculatorContent() {
 
                       {/* PREMIUM PARSED PREVIEW */}
                       {parsedCar && (
-                        <div className="mt-6 parsed-car-card">
+                        <div className="mt-8 parsed-car-card">
                           {parsedCar.imageUrl && (
-                            <div className="w-1/3 min-h-[120px] bg-gray-100">
-                              <img src={parsedCar.imageUrl} alt="Car" className="w-full h-full object-cover" />
+                            <div className="parsed-car-image-container">
+                              <img src={parsedCar.imageUrl} alt="Car" />
                             </div>
                           )}
-                          <div className="p-5 flex-1 flex flex-col justify-center">
-                            <div className="flex items-center gap-1 text-success text-xs font-bold mb-2 uppercase tracking-wide">
+                          <div className="parsed-car-content">
+                            <div className="flex items-center gap-1 text-success text-xs font-bold mb-2 uppercase tracking-widest">
                               <CheckCircle2 size={14} /> Muvaffaqiyatli topildi
                             </div>
-                            <h4 className="font-extrabold text-xl text-primary mb-2 leading-tight">
+                            <h4 className="font-extrabold text-2xl mb-4 leading-tight">
                               {parsedCar.year} {parsedCar.brand} {parsedCar.model}
                             </h4>
-                            <div className="flex flex-wrap gap-3 mb-3">
-                              <span className="flex items-center gap-1 text-xs font-semibold text-muted bg-gray-100 px-2 py-1 rounded">
-                                <Gauge size={12}/> {parsedCar.engineCc} cc
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              <span className="badge">
+                                <Gauge size={14}/> {parsedCar.engineCc} cc
                               </span>
-                              <span className="flex items-center gap-1 text-xs font-semibold text-muted bg-gray-100 px-2 py-1 rounded">
-                                <Fuel size={12}/> {parsedCar.fuelType}
+                              <span className="badge">
+                                <Fuel size={14}/> {parsedCar.fuelType}
                               </span>
-                              <span className="flex items-center gap-1 text-xs font-semibold text-muted bg-gray-100 px-2 py-1 rounded">
-                                <Calendar size={12}/> {parsedCar.condition}
+                              <span className="badge">
+                                <Calendar size={14}/> {parsedCar.condition}
                               </span>
                             </div>
-                            <div className="text-lg font-extrabold text-accent">
-                              {formatCurrency(parsedCar.carPriceUsd, 'USD')} <span className="text-xs text-muted font-normal">taxminiy narx</span>
+                            <div className="text-xl font-extrabold text-accent mt-2">
+                              {formatCurrency(parsedCar.carPriceUsd, 'USD')} <span className="text-sm text-muted font-normal">taxminiy narx</span>
                             </div>
                           </div>
                         </div>
