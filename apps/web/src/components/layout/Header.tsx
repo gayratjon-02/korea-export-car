@@ -25,9 +25,9 @@ export default function Header() {
         </nav>
         
         <div className="header-actions">
-          <button className="btn btn-outline login-btn">
+          <Link href="/login" className="btn btn-outline login-btn">
             <User size={18} /> Sign In
-          </button>
+          </Link>
           <button className="mobile-menu-btn">
             <Menu size={24} />
           </button>
