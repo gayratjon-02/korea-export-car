@@ -114,13 +114,13 @@ function CalculatorContent() {
 
   return (
     <div className="calc-page">
-      <div className="calc-header text-white text-center py-16">
-        <div className="container relative z-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 backdrop-blur-md mb-6 border border-white/20">
+      <div className="calc-header text-white text-center">
+        <div className="container relative z-10 calc-header-content">
+          <div className="calc-header-icon mb-6">
             <Calculator size={32} className="text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold font-outfit mb-4">Smart Bojxona Kalkulyatori</h1>
-          <p className="max-w-2xl mx-auto text-blue-100 text-lg">
+          <h1 className="calc-title mb-4">Smart Bojxona Kalkulyatori</h1>
+          <p className="calc-subtitle text-blue-200">
             Katalogimizdagi avtomobillarni tanlang yoki to'g'ridan-to'g'ri Koreya saytlaridagi havolani kiritib, barcha xarajatlarni aniq hisoblang.
           </p>
         </div>
@@ -146,7 +146,7 @@ function CalculatorContent() {
               </button>
             </div>
 
-            <div className="p-6 md:p-8 pt-0">
+            <div className="calc-form-inner">
               <form onSubmit={handleCalculate} className="flex flex-col gap-8">
                 
                 {/* STEP 1: CAR SELECTION */}
@@ -157,10 +157,9 @@ function CalculatorContent() {
                   </div>
 
                   {activeTab === 'katalog' ? (
-                    <div className="form-group relative pl-10">
+                    <div className="form-group relative">
                       <label className="form-label text-muted mb-2">Qidiruv (Marka yoki Model)</label>
                       <div className="relative">
-                        <Search size={20} className="absolute left-4 top-3.5 text-muted" />
                         <input 
                           type="text" 
                           value={searchQuery} 
@@ -174,7 +173,7 @@ function CalculatorContent() {
                             if (selectedCar && selectedCar.id !== carId) setSelectedCar(null);
                           }}
                           placeholder="Masalan: Kia K5, Hyundai Sonata..." 
-                          className="form-input pl-12 py-3 text-lg font-medium shadow-sm"
+                          className="form-input pl-4 py-3 shadow-sm calc-search-input"
                         />
                       </div>
 
