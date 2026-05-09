@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Calculator, ArrowRight, Info, Car, MapPin, AlertCircle, Search, Link as LinkIcon, CheckCircle2 } from 'lucide-react';
+import { Calculator, ArrowRight, Info, Car, MapPin, AlertCircle, Search, Link as LinkIcon, CheckCircle2, ShieldCheck, Gauge, Calendar, Fuel } from 'lucide-react';
 import { getCountries, getCities, calculateCost, parseExternalUrl } from '@/lib/api/calculator';
 import { formatCurrency } from '@kci/utils';
 import { ICountry, ICity, ICalculationResult } from '@kci/types';
@@ -26,27 +26,6 @@ function CalculatorContent() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedCar, setSelectedCar] = useState<any>(null);
 
-  const searchCars = async (query: string) => {
-    try {
-      const { getCars } = await import('@/lib/api/cars');
-      const res = await getCars({ q: query, limit: 5 });
-      setSearchResults(res.items);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    if (initialCarId && !selectedCar) {
-      import('@/lib/api/cars').then(({ getCarById }) => {
-        getCarById(initialCarId).then(car => {
-          setSelectedCar(car);
-          setSearchQuery(`${car.year} ${car.brand} ${car.model}`);
-        }).catch(console.error);
-      });
-    }
-  }, [initialCarId]);
-  
   // URL flow
   const [url, setUrl] = useState('');
   const [parsing, setParsing] = useState(false);
@@ -69,6 +48,27 @@ function CalculatorContent() {
       setCities([]);
     }
   }, [countryCode]);
+
+  useEffect(() => {
+    if (initialCarId && !selectedCar) {
+      import('@/lib/api/cars').then(({ getCarById }) => {
+        getCarById(initialCarId).then(car => {
+          setSelectedCar(car);
+          setSearchQuery(`${car.year} ${car.brand} ${car.model}`);
+        }).catch(console.error);
+      });
+    }
+  }, [initialCarId]);
+
+  const searchCars = async (query: string) => {
+    try {
+      const { getCars } = await import('@/lib/api/cars');
+      const res = await getCars({ q: query, limit: 5 });
+      setSearchResults(res.items);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleParseUrl = async () => {
     if (!url) return;
@@ -93,14 +93,6 @@ function CalculatorContent() {
       setError('Iltimos davlat va shaharni tanlang');
       return;
     }
-    if (activeTab === 'katalog' && !carId) {
-      setError('Avtomobil ID sini kiriting');
-      return;
-    }
-    if (activeTab === 'url' && !parsedCar) {
-      setError('Avval URL orqali mashinani qidirib toping');
-      return;
-    }
     
     setError('');
     setLoading(true);
@@ -122,12 +114,14 @@ function CalculatorContent() {
 
   return (
     <div className="calc-page">
-      <div className="calc-header bg-primary text-white text-center py-12">
-        <div className="container">
-          <Calculator size={48} className="mx-auto mb-4 text-accent" />
-          <h1>Smart Bojxona Kalkulyatori</h1>
-          <p className="max-w-2xl mx-auto mt-4 text-gray-200">
-            Katalogimizdagi avtomobillarni yoki to'g'ridan-to'g'ri Koreya saytlaridagi (Encar, KBCha) havolalarni kiritib, to'liq xarajatni hisoblang.
+      <div className="calc-header text-white text-center py-16">
+        <div className="container relative z-10">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 backdrop-blur-md mb-6 border border-white/20">
+            <Calculator size={32} className="text-white" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-extrabold font-outfit mb-4">Smart Bojxona Kalkulyatori</h1>
+          <p className="max-w-2xl mx-auto text-blue-100 text-lg">
+            Katalogimizdagi avtomobillarni tanlang yoki to'g'ridan-to'g'ri Koreya saytlaridagi havolani kiritib, barcha xarajatlarni aniq hisoblang.
           </p>
         </div>
       </div>
@@ -135,176 +129,210 @@ function CalculatorContent() {
       <div className="container py-12">
         <div className="calc-grid">
           {/* Form Section */}
-          <div className="calc-form-section card">
+          <div className="calc-form-section premium-card">
             
-            <div className="calc-tabs flex gap-2 p-2 bg-gray-50 border-b border-gray-100 rounded-t-lg">
+            <div className="calc-tabs">
               <button 
-                className={`flex-1 py-3 text-sm font-bold rounded-md transition-all ${activeTab === 'katalog' ? 'bg-primary text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
+                className={`calc-tab ${activeTab === 'katalog' ? 'active' : ''}`}
                 onClick={() => { setActiveTab('katalog'); setResult(null); setError(''); }}
               >
                 Katalogdan tanlash
               </button>
               <button 
-                className={`flex-1 py-3 text-sm font-bold rounded-md transition-all ${activeTab === 'url' ? 'bg-primary text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
+                className={`calc-tab ${activeTab === 'url' ? 'active' : ''}`}
                 onClick={() => { setActiveTab('url'); setResult(null); setError(''); }}
               >
-                Boshqa saytdan URL
+                Koreya saytlaridan URL
               </button>
             </div>
 
-            <div className="p-8">
-              <form onSubmit={handleCalculate} className="calc-form flex flex-col gap-6">
+            <div className="p-6 md:p-8 pt-0">
+              <form onSubmit={handleCalculate} className="flex flex-col gap-8">
                 
-                {/* DYNAMIC INPUT AREA */}
-                {activeTab === 'katalog' ? (
-                  <div className="form-group relative">
-                    <label className="form-label">Katalogdan mashina qidirish</label>
-                    <div className="relative">
-                      <Search size={18} className="absolute left-3 top-3.5 text-muted" />
-                      <input 
-                        type="text" 
-                        value={searchQuery} 
-                        onChange={e => {
-                          setSearchQuery(e.target.value);
-                          if (e.target.value.length > 2) {
-                            searchCars(e.target.value);
-                          } else {
-                            setSearchResults([]);
-                          }
-                          if (selectedCar && selectedCar.id !== carId) setSelectedCar(null);
-                        }}
-                        placeholder="Masalan: Kia K5, Hyundai Sonata..." 
-                        className="form-input pl-10"
-                      />
-                    </div>
-
-                    {/* Dropdown Results */}
-                    {searchResults.length > 0 && !selectedCar && (
-                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-100 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                        {searchResults.map((car: any) => (
-                          <button
-                            key={car.id}
-                            type="button"
-                            className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-50 flex gap-3 items-center"
-                            onClick={() => {
-                              setSelectedCar(car);
-                              setCarId(car.id);
-                              setSearchQuery(`${car.year} ${car.brand} ${car.model}`);
-                              setSearchResults([]);
-                            }}
-                          >
-                            <img 
-                              src={car.media?.[0]?.url || 'https://via.placeholder.com/100'} 
-                              alt="Car" 
-                              className="w-12 h-8 object-cover rounded" 
-                            />
-                            <div>
-                              <div className="font-semibold text-sm text-gray-800">{car.year} {car.brand} {car.model}</div>
-                              <div className="text-xs text-gray-500">{car.engineCc} cc • {formatCurrency(car.priceUsd, 'USD')}</div>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                {/* STEP 1: CAR SELECTION */}
+                <div>
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="step-indicator">1</div>
+                    <h3 className="font-bold text-xl text-primary">Avtomobilni ko'rsating</h3>
                   </div>
-                ) : (
-                  <div className="form-group">
-                    <label className="form-label">Avtomobil Havolasi (Encar, KBCha va h.k.)</label>
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <LinkIcon size={18} className="absolute left-3 top-3.5 text-muted" />
+
+                  {activeTab === 'katalog' ? (
+                    <div className="form-group relative pl-10">
+                      <label className="form-label text-muted mb-2">Qidiruv (Marka yoki Model)</label>
+                      <div className="relative">
+                        <Search size={20} className="absolute left-4 top-3.5 text-muted" />
                         <input 
-                          type="url" 
-                          value={url} 
-                          onChange={e => setUrl(e.target.value)}
-                          placeholder="https://www.encar.com/..." 
-                          className="form-input pl-10"
+                          type="text" 
+                          value={searchQuery} 
+                          onChange={e => {
+                            setSearchQuery(e.target.value);
+                            if (e.target.value.length > 2) {
+                              searchCars(e.target.value);
+                            } else {
+                              setSearchResults([]);
+                            }
+                            if (selectedCar && selectedCar.id !== carId) setSelectedCar(null);
+                          }}
+                          placeholder="Masalan: Kia K5, Hyundai Sonata..." 
+                          className="form-input pl-12 py-3 text-lg font-medium shadow-sm"
                         />
                       </div>
-                      <button 
-                        type="button" 
-                        className="btn btn-secondary shrink-0"
-                        onClick={handleParseUrl}
-                        disabled={parsing || !url}
+
+                      {/* Dropdown Results */}
+                      {searchResults.length > 0 && !selectedCar && (
+                        <div className="absolute z-20 w-[calc(100%-2.5rem)] ml-10 mt-2 bg-white border border-gray-100 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
+                          {searchResults.map((car: any) => (
+                            <button
+                              key={car.id}
+                              type="button"
+                              className="w-full text-left p-4 hover:bg-gray-50 border-b border-gray-50 flex gap-4 items-center transition-colors"
+                              onClick={() => {
+                                setSelectedCar(car);
+                                setCarId(car.id);
+                                setSearchQuery(`${car.year} ${car.brand} ${car.model}`);
+                                setSearchResults([]);
+                              }}
+                            >
+                              <div className="w-16 h-12 rounded overflow-hidden bg-gray-100 shrink-0">
+                                <img 
+                                  src={car.media?.[0]?.url || 'https://via.placeholder.com/100'} 
+                                  alt="Car" 
+                                  className="w-full h-full object-cover" 
+                                />
+                              </div>
+                              <div>
+                                <div className="font-bold text-gray-800">{car.year} {car.brand} {car.model}</div>
+                                <div className="text-sm text-gray-500 font-medium">{car.engineCc} cc • {formatCurrency(car.priceUsd, 'USD')}</div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="form-group pl-10">
+                      <label className="form-label text-muted mb-2">Encar, KBCha havolasi</label>
+                      <div className="flex gap-3">
+                        <div className="relative flex-1">
+                          <LinkIcon size={20} className="absolute left-4 top-3.5 text-muted" />
+                          <input 
+                            type="url" 
+                            value={url} 
+                            onChange={e => setUrl(e.target.value)}
+                            placeholder="https://www.encar.com/..." 
+                            className="form-input pl-12 py-3 shadow-sm"
+                          />
+                        </div>
+                        <button 
+                          type="button" 
+                          className="btn btn-primary px-6 rounded-lg font-bold shadow-md shrink-0"
+                          onClick={handleParseUrl}
+                          disabled={parsing || !url}
+                        >
+                          {parsing ? <span className="loader-sm"></span> : 'Ma\'lumot olish'}
+                        </button>
+                      </div>
+
+                      {/* PREMIUM PARSED PREVIEW */}
+                      {parsedCar && (
+                        <div className="mt-6 parsed-car-card">
+                          {parsedCar.imageUrl && (
+                            <div className="w-1/3 min-h-[120px] bg-gray-100">
+                              <img src={parsedCar.imageUrl} alt="Car" className="w-full h-full object-cover" />
+                            </div>
+                          )}
+                          <div className="p-5 flex-1 flex flex-col justify-center">
+                            <div className="flex items-center gap-1 text-success text-xs font-bold mb-2 uppercase tracking-wide">
+                              <CheckCircle2 size={14} /> Muvaffaqiyatli topildi
+                            </div>
+                            <h4 className="font-extrabold text-xl text-primary mb-2 leading-tight">
+                              {parsedCar.year} {parsedCar.brand} {parsedCar.model}
+                            </h4>
+                            <div className="flex flex-wrap gap-3 mb-3">
+                              <span className="flex items-center gap-1 text-xs font-semibold text-muted bg-gray-100 px-2 py-1 rounded">
+                                <Gauge size={12}/> {parsedCar.engineCc} cc
+                              </span>
+                              <span className="flex items-center gap-1 text-xs font-semibold text-muted bg-gray-100 px-2 py-1 rounded">
+                                <Fuel size={12}/> {parsedCar.fuelType}
+                              </span>
+                              <span className="flex items-center gap-1 text-xs font-semibold text-muted bg-gray-100 px-2 py-1 rounded">
+                                <Calendar size={12}/> {parsedCar.condition}
+                              </span>
+                            </div>
+                            <div className="text-lg font-extrabold text-accent">
+                              {formatCurrency(parsedCar.carPriceUsd, 'USD')} <span className="text-xs text-muted font-normal">taxminiy narx</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="h-px bg-border my-2 w-full"></div>
+
+                {/* STEP 2: LOCATIONS */}
+                <div className={`transition-all duration-500 ${(activeTab === 'katalog' && !carId) || (activeTab === 'url' && !parsedCar) ? 'opacity-40 pointer-events-none grayscale blur-[1px]' : 'opacity-100 blur-none'}`}>
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="step-indicator">2</div>
+                    <h3 className="font-bold text-xl text-primary">Manzilni tanlang</h3>
+                  </div>
+
+                  <div className="pl-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="form-group mb-0">
+                      <label className="form-label text-muted">Davlat</label>
+                      <select 
+                        value={countryCode} 
+                        onChange={e => setCountryCode(e.target.value)}
+                        className="form-select py-3 shadow-sm font-medium"
+                        required
                       >
-                        {parsing ? <span className="loader-sm"></span> : <Search size={18} />} Izlash
-                      </button>
+                        <option value="">Davlatni tanlang</option>
+                        {countries.map(c => (
+                          <option key={c.id} value={c.code}>{c.nameUz || c.name}</option>
+                        ))}
+                      </select>
                     </div>
 
-                    {/* PARSED PREVIEW */}
-                    {parsedCar && (
-                      <div className="mt-4 p-4 border border-blue-100 bg-blue-50 rounded-lg flex items-start gap-4">
-                        {parsedCar.imageUrl && (
-                          <img src={parsedCar.imageUrl} alt="Car" className="w-20 h-16 object-cover rounded shadow-sm" />
-                        )}
-                        <div>
-                          <div className="flex items-center gap-1 text-primary text-xs font-bold mb-1">
-                            <CheckCircle2 size={12} /> Ma'lumot olindi
-                          </div>
-                          <h4 className="font-bold text-sm leading-tight mb-1">{parsedCar.year} {parsedCar.brand} {parsedCar.model}</h4>
-                          <p className="text-xs text-gray-600">
-                            {parsedCar.engineCc} cc • ~{formatCurrency(parsedCar.carPriceUsd, 'USD')}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="h-px bg-gray-100 my-4"></div>
-
-                {/* LOCATIONS SECTION (Hidden until car selected) */}
-                <div className={`transition-opacity duration-300 ${(activeTab === 'katalog' && !carId) || (activeTab === 'url' && !parsedCar) ? 'opacity-50 pointer-events-none grayscale' : 'opacity-100'}`}>
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">2</div>
-                    <h3 className="font-bold text-lg">Manzilni tanlang</h3>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Qabul qiluvchi davlat</label>
-                    <select 
-                      value={countryCode} 
-                      onChange={e => setCountryCode(e.target.value)}
-                      className="form-select"
-                      required
-                    >
-                      <option value="">Davlatni tanlang</option>
-                      {countries.map(c => (
-                        <option key={c.id} value={c.code}>{c.nameUz || c.name}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Shahar / Bojxona posti</label>
-                    <select 
-                      value={cityId} 
-                      onChange={e => setCityId(e.target.value)}
-                      className="form-select"
-                      disabled={!countryCode || cities.length === 0}
-                      required
-                    >
-                      <option value="">Shaharni tanlang</option>
-                      {cities.map(c => (
-                        <option key={c.id} value={c.id}>{c.nameUz || c.name}</option>
-                      ))}
-                    </select>
+                    <div className="form-group mb-0">
+                      <label className="form-label text-muted">Shahar yoki Bojxona</label>
+                      <select 
+                        value={cityId} 
+                        onChange={e => setCityId(e.target.value)}
+                        className="form-select py-3 shadow-sm font-medium"
+                        disabled={!countryCode || cities.length === 0}
+                        required
+                      >
+                        <option value="">Shaharni tanlang</option>
+                        {cities.map(c => (
+                          <option key={c.id} value={c.id}>{c.nameUz || c.name}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
 
                 {error && (
-                  <div className="bg-red-50 text-red-600 p-4 rounded-md flex items-start gap-3 mt-2">
+                  <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-lg flex items-start gap-3 mt-4">
                     <AlertCircle size={20} className="shrink-0 mt-0.5" />
-                    <p className="text-sm">{error}</p>
+                    <p className="text-sm font-medium">{error}</p>
                   </div>
                 )}
 
                 <button 
                   type="submit" 
-                  className="btn btn-primary btn-lg w-full mt-4"
+                  className="btn btn-primary btn-lg w-full mt-4 py-4 text-lg font-bold shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all"
                   disabled={loading || (activeTab === 'katalog' && (!carId || !countryCode || !cityId)) || (activeTab === 'url' && (!parsedCar || !countryCode || !cityId))}
                 >
-                  {loading ? 'Hisoblanmoqda...' : 'Hisoblash'} <ArrowRight size={20} />
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="loader-sm"></span> Hisoblanmoqda...
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      Toliq Xarajatni Hisoblash <ArrowRight size={20} />
+                    </span>
+                  )}
                 </button>
               </form>
             </div>
@@ -313,55 +341,65 @@ function CalculatorContent() {
           {/* Result Section */}
           <div className="calc-result-section">
             {!result ? (
-              <div className="empty-result card flex flex-col items-center justify-center text-center p-12 h-full">
-                <Calculator size={64} className="text-muted mb-4 opacity-50" />
-                <h3 className="text-xl font-bold text-muted mb-2">Natija bu yerda ko'rinadi</h3>
-                <p className="text-muted text-sm max-w-sm opacity-80">
-                  Kerakli ma'lumotlarni kiritib, "Hisoblash" tugmasini bosing va barcha to'lovlar ro'yxati shu yerda hosil bo'ladi.
+              <div className="empty-result">
+                <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                  <Calculator size={40} className="text-gray-300" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-400 mb-3 font-outfit">Natija kutilmoqda</h3>
+                <p className="text-gray-400 text-center max-w-xs leading-relaxed">
+                  Chap tomondagi ma'lumotlarni kiritib hisoblash tugmasini bosing. Barcha bojxona va yo'l xarajatlari shu yerda ko'rsatiladi.
                 </p>
               </div>
             ) : (
-              <div className="result-card card overflow-hidden">
-                <div className="bg-primary text-white p-6 text-center">
-                  <p className="text-blue-200 text-sm mb-1 uppercase tracking-wider font-semibold">Yakuniy Narx (CIP)</p>
-                  <div className="text-4xl font-extrabold font-outfit text-accent">
-                    {formatCurrency(result.total, 'USD')}
+              <div className="premium-card result-card">
+                <div className="result-header text-center text-white">
+                  <div className="relative z-10">
+                    <p className="text-blue-200 text-sm mb-2 uppercase tracking-widest font-bold">Jami Xarajat (CIP)</p>
+                    <div className="text-5xl font-extrabold font-outfit text-white drop-shadow-md">
+                      {formatCurrency(result.total, 'USD')}
+                    </div>
                   </div>
                 </div>
 
-                <div className="p-6">
-                  <h3 className="font-bold text-lg mb-4 border-b pb-2">To'lovlar Taqvimi</h3>
+                <div className="p-8">
+                  <h3 className="font-extrabold text-xl text-primary mb-6 border-b border-border pb-4 flex items-center gap-2">
+                    <ShieldCheck size={24} className="text-success" /> To'lovlar Taqvimi
+                  </h3>
                   
-                  <div className="breakdown-list flex flex-col gap-3 mb-6">
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-gray-600 flex items-center gap-2">
-                        <Car size={16} /> Avtomobil narxi (FOB)
+                  <div className="flex flex-col gap-4 mb-8">
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-muted font-medium flex items-center gap-2">
+                        <Car size={18} /> Avtomobil narxi (FOB)
                       </span>
-                      <span className="font-semibold">{formatCurrency(result.carPrice, 'USD')}</span>
+                      <span className="font-bold text-lg text-primary">{formatCurrency(result.carPrice, 'USD')}</span>
                     </div>
 
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-gray-600">Yetkazib berish (Logistika)</span>
-                      <span className="font-semibold">{formatCurrency(result.shipping, 'USD')}</span>
+                    <div className="flex justify-between items-center py-2 border-t border-dashed border-border">
+                      <span className="text-muted font-medium flex items-center gap-2">
+                        <MapPin size={18} /> Logistika va Yetkazib berish
+                      </span>
+                      <span className="font-bold text-lg text-primary">{formatCurrency(result.shipping, 'USD')}</span>
                     </div>
 
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-gray-600">Bojxona (Boj + QQS + Aksiz)</span>
-                      <span className="font-semibold">{formatCurrency(result.customsDuty + result.vat + result.excise + result.utilizationFee + result.registrationFee, 'USD')}</span>
+                    <div className="flex justify-between items-center py-2 border-t border-dashed border-border">
+                      <span className="text-muted font-medium">Davlat Bojxona To'lovlari <br/><span className="text-xs text-gray-400">(Boj, QQS, Aksiz, Util)</span></span>
+                      <span className="font-bold text-lg text-primary">
+                        {formatCurrency(result.customsDuty + result.vat + result.excise + result.utilizationFee + result.registrationFee, 'USD')}
+                      </span>
                     </div>
 
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-gray-600">KCI Agentlik xizmati & Sug'urta</span>
-                      <span className="font-semibold">
+                    <div className="flex justify-between items-center py-2 border-t border-dashed border-border">
+                      <span className="text-muted font-medium">KCI xizmati & Sug'urta</span>
+                      <span className="font-bold text-lg text-primary">
                         {formatCurrency(result.insurance + result.additionalFees, 'USD')}
                       </span>
                     </div>
                   </div>
 
-                  <div className="bg-blue-50 p-4 rounded-lg flex items-start gap-3 border border-blue-100">
-                    <Info size={20} className="text-primary shrink-0 mt-0.5" />
-                    <p className="text-xs text-primary leading-relaxed">
-                      Eslatma: Boshqa saytlardan olingan URL orqali hisoblashlar taxminiy hisoblanadi. Aniqlik kiritish uchun agentlarimiz bilan bog'laning.
+                  <div className="bg-blue-50/50 p-5 rounded-xl flex items-start gap-4 border border-blue-100">
+                    <Info size={24} className="text-primary shrink-0" />
+                    <p className="text-sm text-primary/80 font-medium leading-relaxed">
+                      Eslatma: Ushbu hisoblash tizimi eng so'nggi bojxona stavkalari asosida ishlaydi. Yakuniy aniq narx valyuta kursiga qarab bir oz farq qilishi mumkin.
                     </p>
                   </div>
                 </div>
@@ -376,7 +414,7 @@ function CalculatorContent() {
 
 export default function CalculatorPage() {
   return (
-    <Suspense fallback={<div className="p-12 text-center text-muted">Kalkulyator yuklanmoqda...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="loader-sm border-primary"></div></div>}>
       <CalculatorContent />
     </Suspense>
   );

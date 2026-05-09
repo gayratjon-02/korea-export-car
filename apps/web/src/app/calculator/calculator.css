@@ -1,61 +1,137 @@
 .calc-page {
   background-color: var(--bg-main);
+  background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.05), transparent 40%),
+                    radial-gradient(circle at bottom left, rgba(239, 68, 68, 0.05), transparent 40%);
   min-height: calc(100vh - 4.5rem);
 }
 
 .calc-header {
-  background: linear-gradient(135deg, var(--primary) 0%, #000000 100%);
+  background: var(--primary);
+  background-image: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, transparent 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.calc-header::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
 }
 
 .calc-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 2.5rem;
   align-items: start;
 }
 
 @media (min-width: 1024px) {
   .calc-grid {
-    grid-template-columns: 1.2fr 1fr; /* Make form slightly larger than result */
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-.calc-tabs button {
+.premium-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.calc-tabs {
+  background: var(--bg-main);
+  padding: 0.5rem;
+  border-radius: var(--radius-lg);
+  margin: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.calc-tab {
+  flex: 1;
+  padding: 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-muted);
+}
+
+.calc-tab.active {
+  background: var(--bg-card);
+  color: var(--primary);
+  box-shadow: var(--shadow-md);
+}
+
+@media (prefers-color-scheme: dark) {
+  .calc-tab.active {
+    background: var(--primary);
+    color: white;
+  }
+}
+
+.step-indicator {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.parsed-car-card {
+  background: linear-gradient(to right, var(--bg-card), var(--bg-main));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s ease;
+}
+
+.parsed-car-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.result-card {
+  border-top: none;
+}
+
+.result-header {
+  background: linear-gradient(135deg, var(--primary) 0%, #000000 100%);
+  padding: 2.5rem 2rem;
   position: relative;
   overflow: hidden;
 }
 
-.calc-tabs button.border-primary::after {
+.result-header::before {
   content: '';
   position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: var(--primary);
-  border-radius: 2px 2px 0 0;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
 }
 
 .empty-result {
-  min-height: 450px;
-  border: 1px dashed var(--border);
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-@media (prefers-color-scheme: dark) {
-  .empty-result {
-    background-color: rgba(255, 255, 255, 0.02);
-  }
-}
-
-.result-card {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-5px);
-  border-top: 4px solid var(--accent);
-}
-
-.breakdown-list > div:last-child {
-  border-bottom: none;
+  min-height: 500px;
+  border: 2px dashed var(--border);
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xl);
 }
 
 .loader-sm {
