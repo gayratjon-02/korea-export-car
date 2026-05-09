@@ -1,6 +1,7 @@
+import HeroSearch from '@/components/home/HeroSearch';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, ShieldCheck, Ship, Clock, Calculator } from 'lucide-react';
+import { ShieldCheck, Ship, Calculator } from 'lucide-react';
 import './home.css';
 
 export default function Home() {
@@ -9,22 +10,21 @@ export default function Home() {
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-overlay"></div>
-        <div className="container hero-content animate-fade-in">
-          <div className="hero-badge">Direct from South Korea</div>
-          <h1 className="hero-title">
-            Premium Cars.<br />
-            <span className="text-accent">Transparent Prices.</span>
+        <div className="container hero-content animate-fade-in text-center">
+          <div className="hero-badge mx-auto mb-6">Direct from South Korea</div>
+          <h1 className="hero-title mx-auto text-5xl md:text-7xl font-extrabold font-outfit mb-6">
+            Koreyadan Mashinani<br />
+            <span className="text-accent">O'zingiz Hisoblang.</span>
           </h1>
-          <p className="hero-subtitle">
-            Import the finest vehicles directly from South Korea to Uzbekistan, Kazakhstan, and the UAE. Save up to 20% by cutting out the middleman.
+          <p className="hero-subtitle mx-auto text-lg text-gray-300 max-w-2xl mb-8">
+            Marka yoki modelni yozing va O'zbekiston, Qozog'iston yoki to'g'ridan-to'g'ri o'z shahringizgacha bo'lgan barcha bojxona va logistika xarajatlarini hisoblang.
           </p>
-          <div className="hero-actions">
-            <Link href="/catalog" className="btn btn-primary btn-lg">
-              View Catalog <ArrowRight size={20} />
-            </Link>
-            <Link href="/calculator" className="btn btn-secondary btn-lg">
-              Calculate Customs <Calculator size={20} />
-            </Link>
+          
+          <HeroSearch />
+          
+          <div className="flex items-center justify-center gap-6 mt-8 text-sm text-gray-400">
+            <span className="flex items-center gap-2"><ShieldCheck size={16} className="text-primary-light"/> Shaffof xarajatlar</span>
+            <span className="flex items-center gap-2"><Ship size={16} className="text-primary-light"/> To'g'ridan-to'g'ri logistika</span>
           </div>
         </div>
       </section>

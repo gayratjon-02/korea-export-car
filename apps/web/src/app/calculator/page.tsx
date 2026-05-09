@@ -28,7 +28,6 @@ function CalculatorContent() {
 
   const searchCars = async (query: string) => {
     try {
-      // Import dynamically or pass as dependency
       const { getCars } = await import('@/lib/api/cars');
       const res = await getCars({ q: query, limit: 5 });
       setSearchResults(res.items);
@@ -36,6 +35,17 @@ function CalculatorContent() {
       console.error(err);
     }
   };
+
+  useEffect(() => {
+    if (initialCarId && !selectedCar) {
+      import('@/lib/api/cars').then(({ getCarById }) => {
+        getCarById(initialCarId).then(car => {
+          setSelectedCar(car);
+          setSearchQuery(`${car.year} ${car.brand} ${car.model}`);
+        }).catch(console.error);
+      });
+    }
+  }, [initialCarId]);
   
   // URL flow
   const [url, setUrl] = useState('');
