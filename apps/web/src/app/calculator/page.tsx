@@ -22,6 +22,20 @@ function CalculatorContent() {
   
   // Catalog flow
   const [carId, setCarId] = useState(initialCarId);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [selectedCar, setSelectedCar] = useState<any>(null);
+
+  const searchCars = async (query: string) => {
+    try {
+      // Import dynamically or pass as dependency
+      const { getCars } = await import('@/lib/api/cars');
+      const res = await getCars({ q: query, limit: 5 });
+      setSearchResults(res.items);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   
   // URL flow
   const [url, setUrl] = useState('');
@@ -133,18 +147,55 @@ function CalculatorContent() {
                 
                 {/* DYNAMIC INPUT AREA */}
                 {activeTab === 'katalog' ? (
-                  <div className="form-group">
-                    <label className="form-label">KCI Avtomobil ID si</label>
+                  <div className="form-group relative">
+                    <label className="form-label">Katalogdan mashina qidirish</label>
                     <div className="relative">
-                      <Car size={18} className="absolute left-3 top-3.5 text-muted" />
+                      <Search size={18} className="absolute left-3 top-3.5 text-muted" />
                       <input 
                         type="text" 
-                        value={carId} 
-                        onChange={e => setCarId(e.target.value)}
-                        placeholder="Masalan: cm3k29..." 
+                        value={searchQuery} 
+                        onChange={e => {
+                          setSearchQuery(e.target.value);
+                          if (e.target.value.length > 2) {
+                            searchCars(e.target.value);
+                          } else {
+                            setSearchResults([]);
+                          }
+                          if (selectedCar && selectedCar.id !== carId) setSelectedCar(null);
+                        }}
+                        placeholder="Masalan: Kia K5, Hyundai Sonata..." 
                         className="form-input pl-10"
                       />
                     </div>
+
+                    {/* Dropdown Results */}
+                    {searchResults.length > 0 && !selectedCar && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-100 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                        {searchResults.map((car: any) => (
+                          <button
+                            key={car.id}
+                            type="button"
+                            className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-50 flex gap-3 items-center"
+                            onClick={() => {
+                              setSelectedCar(car);
+                              setCarId(car.id);
+                              setSearchQuery(`${car.year} ${car.brand} ${car.model}`);
+                              setSearchResults([]);
+                            }}
+                          >
+                            <img 
+                              src={car.media?.[0]?.url || 'https://via.placeholder.com/100'} 
+                              alt="Car" 
+                              className="w-12 h-8 object-cover rounded" 
+                            />
+                            <div>
+                              <div className="font-semibold text-sm text-gray-800">{car.year} {car.brand} {car.model}</div>
+                              <div className="text-xs text-gray-500">{car.engineCc} cc • {formatCurrency(car.priceUsd, 'USD')}</div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="form-group">

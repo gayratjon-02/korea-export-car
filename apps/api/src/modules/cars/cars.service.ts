@@ -7,6 +7,7 @@ export class CarsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(filters: {
+    q?: string;
     agentId?: string;
     brand?: string;
     model?: string;
@@ -41,6 +42,14 @@ export class CarsService {
       ...(filters.fuelType && { fuelType: filters.fuelType as any }),
       ...(filters.condition && { condition: filters.condition as any }),
     };
+
+    if (filters.q) {
+      where.OR = [
+        { brand: { contains: filters.q, mode: 'insensitive' as any } },
+        { model: { contains: filters.q, mode: 'insensitive' as any } },
+        { description: { contains: filters.q, mode: 'insensitive' as any } },
+      ];
+    }
 
     const orderBy: Prisma.CarOrderByWithRelationInput = {};
     if (filters.sortBy) {
