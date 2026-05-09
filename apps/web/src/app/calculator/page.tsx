@@ -115,13 +115,13 @@ function CalculatorContent() {
             
             <div className="calc-tabs flex border-b border-gray-100">
               <button 
-                className={`flex-1 py-4 text-sm font-bold border-b-2 transition-all ${activeTab === 'katalog' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:bg-gray-50'}`}
+                className={`flex-1 py-4 text-sm font-bold border-b-2 transition-all ${activeTab === 'katalog' ? 'border-primary text-primary' : 'border-transparent text-muted hover:bg-gray-50'}`}
                 onClick={() => { setActiveTab('katalog'); setResult(null); setError(''); }}
               >
-                Katalogdan ID kiritish
+                Katalogdan tanlash
               </button>
               <button 
-                className={`flex-1 py-4 text-sm font-bold border-b-2 transition-all ${activeTab === 'url' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:bg-gray-50'}`}
+                className={`flex-1 py-4 text-sm font-bold border-b-2 transition-all ${activeTab === 'url' ? 'border-primary text-primary' : 'border-transparent text-muted hover:bg-gray-50'}`}
                 onClick={() => { setActiveTab('url'); setResult(null); setError(''); }}
               >
                 Boshqa saytdan URL
@@ -134,30 +134,30 @@ function CalculatorContent() {
                 {/* DYNAMIC INPUT AREA */}
                 {activeTab === 'katalog' ? (
                   <div className="form-group">
-                    <label className="block text-sm font-semibold mb-2">KCI Avtomobil ID si</label>
+                    <label className="form-label">KCI Avtomobil ID si</label>
                     <div className="relative">
-                      <Car size={18} className="absolute left-3 top-3.5 text-gray-400" />
+                      <Car size={18} className="absolute left-3 top-3.5 text-muted" />
                       <input 
                         type="text" 
                         value={carId} 
                         onChange={e => setCarId(e.target.value)}
                         placeholder="Masalan: cm3k29..." 
-                        className="form-input pl-10 w-full"
+                        className="form-input pl-10"
                       />
                     </div>
                   </div>
                 ) : (
                   <div className="form-group">
-                    <label className="block text-sm font-semibold mb-2">Avtomobil Havolasi (URL)</label>
+                    <label className="form-label">Avtomobil Havolasi (Encar, KBCha va h.k.)</label>
                     <div className="flex gap-2">
                       <div className="relative flex-1">
-                        <LinkIcon size={18} className="absolute left-3 top-3.5 text-gray-400" />
+                        <LinkIcon size={18} className="absolute left-3 top-3.5 text-muted" />
                         <input 
                           type="url" 
                           value={url} 
                           onChange={e => setUrl(e.target.value)}
                           placeholder="https://www.encar.com/..." 
-                          className="form-input pl-10 w-full"
+                          className="form-input pl-10"
                         />
                       </div>
                       <button 
@@ -193,11 +193,11 @@ function CalculatorContent() {
                 <div className="h-px bg-gray-100 my-2"></div>
 
                 <div className="form-group">
-                  <label className="block text-sm font-semibold mb-2">Qabul qiluvchi davlat</label>
+                  <label className="form-label">Qabul qiluvchi davlat</label>
                   <select 
                     value={countryCode} 
                     onChange={e => setCountryCode(e.target.value)}
-                    className="form-select w-full"
+                    className="form-select"
                     required
                   >
                     <option value="">Davlatni tanlang</option>
@@ -208,11 +208,11 @@ function CalculatorContent() {
                 </div>
 
                 <div className="form-group">
-                  <label className="block text-sm font-semibold mb-2">Shahar / Bojxona posti</label>
+                  <label className="form-label">Shahar / Bojxona posti</label>
                   <select 
                     value={cityId} 
                     onChange={e => setCityId(e.target.value)}
-                    className="form-select w-full"
+                    className="form-select"
                     disabled={!countryCode || cities.length === 0}
                     required
                   >
@@ -244,10 +244,10 @@ function CalculatorContent() {
           {/* Result Section */}
           <div className="calc-result-section">
             {!result ? (
-              <div className="empty-result card flex flex-col items-center justify-center text-center p-12 h-full bg-gray-50">
-                <Calculator size={64} className="text-gray-300 mb-4" />
-                <h3 className="text-xl font-bold text-gray-400 mb-2">Natija bu yerda ko'rinadi</h3>
-                <p className="text-gray-500 text-sm max-w-sm">
+              <div className="empty-result card flex flex-col items-center justify-center text-center p-12 h-full">
+                <Calculator size={64} className="text-muted mb-4 opacity-50" />
+                <h3 className="text-xl font-bold text-muted mb-2">Natija bu yerda ko'rinadi</h3>
+                <p className="text-muted text-sm max-w-sm opacity-80">
                   Kerakli ma'lumotlarni kiritib, "Hisoblash" tugmasini bosing va barcha to'lovlar ro'yxati shu yerda hosil bo'ladi.
                 </p>
               </div>
