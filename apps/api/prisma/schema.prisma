@@ -1,0 +1,239 @@
+// ==========================================
+// Korea Car Import — Prisma Schema
+// ==========================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Users ----------
+
+enum Role {
+  USER
+  AGENT
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String?
+  name      String
+  role      Role     @default(USER)
+  country   String?
+  city      String?
+  phone     String?
+  avatarUrl String?  @map("avatar_url")
+  googleId  String?  @unique @map("google_id")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  agent          Agent?
+  sentMessages   Message[]  @relation("SenderMessages")
+  userChatRooms  ChatRoom[] @relation("UserChatRooms")
+  agentChatRooms ChatRoom[] @relation("AgentChatRooms")
+  approvedRates  CustomsRate[] @relation("ApprovedBy")
+
+  @@map("users")
+}
+
+model Agent {
+  id          String   @id @default(uuid())
+  userId      String   @unique @map("user_id")
+  companyName String   @map("company_name")
+  address     String?
+  license     String?
+  description String?
+  isApproved  Boolean  @default(false) @map("is_approved")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cars Car[]
+
+  @@map("agents")
+}
+
+// ---------- Cars ----------
+
+enum FuelType {
+  GASOLINE
+  DIESEL
+  HYBRID
+  ELECTRIC
+  LPG
+}
+
+enum CarCondition {
+  NEW
+  USED
+}
+
+model Car {
+  id          String       @id @default(uuid())
+  agentId     String       @map("agent_id")
+  brand       String
+  model       String
+  year        Int
+  engineCc    Int          @map("engine_cc")
+  fuelType    FuelType     @map("fuel_type")
+  priceKrw    BigInt       @map("price_krw")
+  priceUsd    Decimal      @map("price_usd") @db.Decimal(12, 2)
+  condition   CarCondition @default(USED)
+  mileage     Int?
+  color       String?
+  transmission String?
+  description String?      @db.Text
+  isActive    Boolean      @default(true) @map("is_active")
+  viewCount   Int          @default(0) @map("view_count")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  agent     Agent      @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  media     CarMedia[]
+  chatRooms ChatRoom[]
+
+  @@index([brand, model])
+  @@index([year])
+  @@index([priceUsd])
+  @@index([engineCc])
+  @@index([fuelType])
+  @@index([isActive])
+  @@map("cars")
+}
+
+model CarMedia {
+  id        String   @id @default(uuid())
+  carId     String   @map("car_id")
+  url       String
+  type      String   @default("image") // image | video
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@index([carId])
+  @@map("car_media")
+}
+
+// ---------- Locations ----------
+
+model Country {
+  id     String @id @default(uuid())
+  name   String
+  nameUz String? @map("name_uz")
+  code   String @unique
+
+  cities      City[]
+  customsRates CustomsRate[]
+
+  @@map("countries")
+}
+
+model City {
+  id        String @id @default(uuid())
+  countryId String @map("country_id")
+  name      String
+  nameUz    String? @map("name_uz")
+
+  country       Country        @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  shippingRates ShippingRate[]
+
+  @@index([countryId])
+  @@map("cities")
+}
+
+// ---------- Customs & Shipping ----------
+
+enum RateStatus {
+  DRAFT
+  APPROVED
+  REJECTED
+}
+
+model CustomsRate {
+  id          String     @id @default(uuid())
+  countryId   String     @map("country_id")
+  formulaData Json       @map("formula_data")
+  status      RateStatus @default(DRAFT)
+  source      String?    // "ai_batch" | "manual"
+  notes       String?    @db.Text
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  approvedBy  String?    @map("approved_by")
+  approvedAt  DateTime?  @map("approved_at")
+
+  country  Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  approver User?   @relation("ApprovedBy", fields: [approvedBy], references: [id])
+
+  @@index([countryId, status])
+  @@map("customs_rates")
+}
+
+model ShippingRate {
+  id         String   @id @default(uuid())
+  cityId     String   @map("city_id")
+  originPort String   @default("Pyeongtaek") @map("origin_port")
+  priceUsd   Decimal  @map("price_usd") @db.Decimal(10, 2)
+  notes      String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  city City @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  @@unique([cityId, originPort])
+  @@map("shipping_rates")
+}
+
+// ---------- Chat ----------
+
+model ChatRoom {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  agentId         String   @map("agent_id")
+  carId           String   @map("car_id")
+  calculationData Json?    @map("calculation_data")
+  lastMessageAt   DateTime? @map("last_message_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user     User      @relation("UserChatRooms", fields: [userId], references: [id])
+  agent    User      @relation("AgentChatRooms", fields: [agentId], references: [id])
+  car      Car       @relation(fields: [carId], references: [id])
+  messages Message[]
+
+  @@unique([userId, agentId, carId])
+  @@index([userId])
+  @@index([agentId])
+  @@map("chat_rooms")
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  AUDIO
+  SYSTEM
+}
+
+model Message {
+  id        String      @id @default(uuid())
+  roomId    String      @map("room_id")
+  senderId  String      @map("sender_id")
+  type      MessageType @default(TEXT)
+  content   String      @db.Text
+  mediaUrl  String?     @map("media_url")
+  isRead    Boolean     @default(false) @map("is_read")
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  room   ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sender User     @relation("SenderMessages", fields: [senderId], references: [id])
+
+  @@index([roomId, createdAt])
+  @@index([senderId])
+  @@map("messages")
+}

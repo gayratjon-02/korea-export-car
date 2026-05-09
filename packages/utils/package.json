@@ -1,0 +1,17 @@
+{
+  "name": "@kci/utils",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@kci/types": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
