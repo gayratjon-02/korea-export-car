@@ -27,5 +27,5 @@ export async function getCarById(id: string) {
     throw new Error('Failed to fetch car');
   }
   
-  return res.json() as Promise<{ data: ICar }>;
+  return res.json() as Promise<ICar>;
 }
