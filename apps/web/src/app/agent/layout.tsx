@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Car, PlusCircle, MessageSquare, User, LogOut, Menu, X, ShieldCheck } from 'lucide-react';
@@ -11,6 +11,16 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (e) {}
+    }
+  }, []);
 
   const handleLogout = () => {
     clearTokens();
@@ -51,14 +61,24 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
           </button>
         </div>
 
-        <div className="sidebar-user px-6 py-6 border-b border-gray-100 dark:border-gray-800">
+        <div className="sidebar-user px-6 py-6 border-b border-[var(--border)]">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
-              AK
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg overflow-hidden shrink-0">
+              {user?.avatarUrl ? (
+                <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                user?.name?.substring(0, 2).toUpperCase() || 'DL'
+              )}
             </div>
-            <div>
-              <div className="font-bold text-sm">Avto Korea MChJ</div>
-              <div className="text-xs text-muted flex items-center gap-1"><ShieldCheck size={12} className="text-success" /> Tasdiqlangan Diler</div>
+            <div className="min-w-0">
+              <div className="font-bold text-sm text-[var(--text-main)] truncate">{user?.agent?.companyName || user?.name || 'Yuklanmoqda...'}</div>
+              <div className="text-xs flex items-center gap-1 mt-0.5">
+                {user?.agent?.isApproved ? (
+                  <><ShieldCheck size={12} className="text-success shrink-0" /> <span className="text-success font-medium truncate">Tasdiqlangan Diler</span></>
+                ) : (
+                  <><span className="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span> <span className="text-amber-500 font-medium truncate">Tekshiruvda</span></>
+                )}
+              </div>
             </div>
           </div>
         </div>

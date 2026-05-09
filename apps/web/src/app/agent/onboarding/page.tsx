@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Building2, Phone, MapPin, Upload, CheckCircle2 } from 'lucide-react';
+import { registerAsAgent } from '@/lib/api/users';
 import '../agent.css';
 
 export default function AgentOnboarding() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
+  const [error, setError] = useState('');
 
   const [formData, setFormData] = useState({
     companyName: '',
@@ -17,15 +19,24 @@ export default function AgentOnboarding() {
     description: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      await registerAsAgent({
+        companyName: formData.companyName,
+        phone: formData.phoneNumber,
+        address: formData.address,
+        description: formData.description
+      });
       setStep(2);
-    }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Xatolik yuz berdi');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (step === 2) {
@@ -59,6 +70,11 @@ export default function AgentOnboarding() {
         </div>
 
         <div className="premium-card p-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          {error && (
+            <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-lg font-medium text-sm mb-6">
+              {error}
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="flex flex-col gap-8">
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

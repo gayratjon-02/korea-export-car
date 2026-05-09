@@ -5,10 +5,13 @@ import { useRouter } from 'next/navigation';
 import { Upload, X, Save, ArrowLeft, Info, Car, Fuel, Settings, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 
+import { createCar, uploadCarMedia } from '@/lib/api/cars';
+
 export default function AgentNewCar() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<string[]>([]);
+  const [error, setError] = useState('');
   
   const [formData, setFormData] = useState({
     brand: '',
@@ -23,7 +26,7 @@ export default function AgentNewCar() {
   });
 
   const handleImageUpload = () => {
-    // Simulate image upload
+    // Simulate image upload - In a real app this would upload to S3/Cloudinary and return URL
     if (images.length < 5) {
       setImages([...images, `https://images.unsplash.com/photo-1550314405-188e6be019aa?auto=format&fit=crop&q=80&w=400&hash=${Math.random()}`]);
     }
@@ -33,15 +36,32 @@ export default function AgentNewCar() {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const carPayload = {
+        ...formData,
+        year: parseInt(formData.year),
+        priceUsd: parseFloat(formData.priceUsd),
+        engineCc: parseInt(formData.engineCc),
+        mileage: parseInt(formData.mileage)
+      };
+
+      const newCar = await createCar(carPayload);
+      
+      // Upload media one by one
+      for (let i = 0; i < images.length; i++) {
+        await uploadCarMedia(newCar.id, { url: images[i], type: 'image', sortOrder: i });
+      }
+
       router.push('/agent/cars');
-    }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Mashina qo\'shishda xatolik yuz berdi');
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,6 +80,11 @@ export default function AgentNewCar() {
         
         {/* Left Column: Form Fields */}
         <div className="lg:col-span-2 space-y-6">
+          {error && (
+            <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-lg font-medium text-sm">
+              {error}
+            </div>
+          )}
           <div className="premium-card p-8">
             <h3 className="text-xl font-bold text-[var(--text-main)] mb-6 flex items-center gap-2">
               <Car size={20} className="text-primary" /> Asosiy Ma'lumotlar

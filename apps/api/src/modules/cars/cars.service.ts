@@ -100,16 +100,23 @@ export class CarsService {
     return car;
   }
 
-  async create(agentId: string, data: any) {
+  private async getAgentByUserId(userId: string) {
+    const agent = await this.prisma.agent.findUnique({ where: { userId } });
+    if (!agent) throw new ForbiddenException('Siz diler sifatida ro\'yxatdan o\'tmagansiz');
+    return agent;
+  }
+
+  async create(userId: string, data: any) {
+    const agent = await this.getAgentByUserId(userId);
     return this.prisma.car.create({
       data: {
-        agentId,
+        agentId: agent.id,
         brand: data.brand,
         model: data.model,
         year: data.year,
         engineCc: data.engineCc,
         fuelType: data.fuelType,
-        priceKrw: data.priceKrw,
+        priceKrw: data.priceKrw || 0,
         priceUsd: data.priceUsd,
         condition: data.condition || 'USED',
         mileage: data.mileage,
@@ -121,10 +128,11 @@ export class CarsService {
     });
   }
 
-  async update(id: string, agentId: string, data: any) {
+  async update(id: string, userId: string, data: any) {
+    const agent = await this.getAgentByUserId(userId);
     const car = await this.prisma.car.findUnique({ where: { id } });
     if (!car) throw new NotFoundException('Mashina topilmadi');
-    if (car.agentId !== agentId) throw new ForbiddenException('Bu mashina sizga tegishli emas');
+    if (car.agentId !== agent.id) throw new ForbiddenException('Bu mashina sizga tegishli emas');
 
     return this.prisma.car.update({
       where: { id },
@@ -133,18 +141,20 @@ export class CarsService {
     });
   }
 
-  async delete(id: string, agentId: string) {
+  async delete(id: string, userId: string) {
+    const agent = await this.getAgentByUserId(userId);
     const car = await this.prisma.car.findUnique({ where: { id } });
     if (!car) throw new NotFoundException('Mashina topilmadi');
-    if (car.agentId !== agentId) throw new ForbiddenException('Bu mashina sizga tegishli emas');
+    if (car.agentId !== agent.id) throw new ForbiddenException('Bu mashina sizga tegishli emas');
 
     return this.prisma.car.delete({ where: { id } });
   }
 
-  async addMedia(carId: string, agentId: string, mediaData: { url: string; type: string; sortOrder?: number }) {
+  async addMedia(carId: string, userId: string, mediaData: { url: string; type: string; sortOrder?: number }) {
+    const agent = await this.getAgentByUserId(userId);
     const car = await this.prisma.car.findUnique({ where: { id: carId } });
     if (!car) throw new NotFoundException('Mashina topilmadi');
-    if (car.agentId !== agentId) throw new ForbiddenException('Bu mashina sizga tegishli emas');
+    if (car.agentId !== agent.id) throw new ForbiddenException('Bu mashina sizga tegishli emas');
 
     return this.prisma.carMedia.create({
       data: {
@@ -156,9 +166,10 @@ export class CarsService {
     });
   }
 
-  async getAgentCars(agentId: string) {
+  async getAgentCars(userId: string) {
+    const agent = await this.getAgentByUserId(userId);
     return this.prisma.car.findMany({
-      where: { agentId },
+      where: { agentId: agent.id },
       include: { media: { orderBy: { sortOrder: 'asc' } } },
       orderBy: { createdAt: 'desc' },
     });

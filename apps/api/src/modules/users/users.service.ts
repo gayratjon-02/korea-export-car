@@ -26,10 +26,13 @@ export class UsersService {
     });
   }
 
-  async registerAsAgent(userId: string, data: { companyName: string; address?: string; license?: string }) {
+  async registerAsAgent(userId: string, data: { companyName: string; address?: string; license?: string; description?: string; phone?: string }) {
     const user = await this.prisma.user.update({
       where: { id: userId },
-      data: { role: 'AGENT' },
+      data: { 
+        role: 'AGENT',
+        ...(data.phone && { phone: data.phone })
+      },
     });
 
     const agent = await this.prisma.agent.create({
@@ -38,6 +41,7 @@ export class UsersService {
         companyName: data.companyName,
         address: data.address,
         license: data.license,
+        description: data.description,
       },
     });
 
