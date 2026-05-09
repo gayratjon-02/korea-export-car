@@ -102,6 +102,7 @@ export interface ICar {
   transmission?: string;
   description?: string;
   isActive: boolean;
+  viewCount: number;
   media: ICarMedia[];
   createdAt: Date;
   updatedAt: Date;
