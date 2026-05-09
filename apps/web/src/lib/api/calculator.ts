@@ -15,9 +15,10 @@ export async function getCities(countryCode: string): Promise<ICity[]> {
 }
 
 export async function calculateCost(data: {
-  carId: string;
+  carId?: string;
   countryCode: string;
   cityId: string;
+  manualCar?: any;
 }): Promise<ICalculationResult> {
   const res = await fetch(`${API_URL}/calculator/calculate`, {
     method: 'POST',
@@ -28,5 +29,16 @@ export async function calculateCost(data: {
   });
   
   if (!res.ok) throw new Error('Failed to calculate cost');
+  return res.json();
+}
+
+export async function parseExternalUrl(url: string) {
+  const res = await fetch(`${API_URL}/calculator/parse-url`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url }),
+  });
+  
+  if (!res.ok) throw new Error('Failed to parse URL');
   return res.json();
 }

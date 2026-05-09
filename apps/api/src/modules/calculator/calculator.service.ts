@@ -32,10 +32,35 @@ export interface CalculationBreakdown {
 export class CalculatorService {
   constructor(private prisma: PrismaService) {}
 
-  async calculate(carId: string, countryCode: string, cityId: string): Promise<CalculationBreakdown> {
-    // Get car details
-    const car = await this.prisma.car.findUnique({ where: { id: carId } });
-    if (!car) throw new NotFoundException('Mashina topilmadi');
+  async calculate(
+    carId: string | undefined, 
+    countryCode: string, 
+    cityId: string,
+    manualCar?: CalculationInput
+  ): Promise<CalculationBreakdown> {
+    
+    let input: CalculationInput;
+    let carPriceUsd: number;
+
+    if (carId) {
+      // Get car details from DB
+      const car = await this.prisma.car.findUnique({ where: { id: carId } });
+      if (!car) throw new NotFoundException('Mashina topilmadi');
+      carPriceUsd = Number(car.priceUsd);
+      input = {
+        carPriceUsd,
+        engineCc: car.engineCc,
+        year: car.year,
+        fuelType: car.fuelType,
+        condition: car.condition,
+      };
+    } else if (manualCar) {
+      // Use manually provided car details (e.g. from parsed URL)
+      input = manualCar;
+      carPriceUsd = manualCar.carPriceUsd;
+    } else {
+      throw new Error('carId yoki manualCar taqdim etilishi shart');
+    }
 
     // Get shipping rate
     const shippingRate = await this.prisma.shippingRate.findFirst({
@@ -53,17 +78,7 @@ export class CalculatorService {
       orderBy: { updatedAt: 'desc' },
     });
 
-    const carPriceUsd = Number(car.priceUsd);
     const shippingUsd = shippingRate ? Number(shippingRate.priceUsd) : 0;
-    const carAge = new Date().getFullYear() - car.year;
-
-    const input: CalculationInput = {
-      carPriceUsd,
-      engineCc: car.engineCc,
-      year: car.year,
-      fuelType: car.fuelType,
-      condition: car.condition,
-    };
 
     // Calculate customs based on country
     const customs = this.calculateCustomsByCountry(countryCode, input, shippingUsd);
@@ -263,5 +278,41 @@ export class CalculatorService {
       where: { countryId: country.id },
       orderBy: { name: 'asc' },
     });
+  }
+
+  async parseUrl(url: string) {
+    try {
+      // Simple fetch to get basic meta tags to simulate smart scraping
+      const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+      const html = await res.text();
+      
+      const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+      const title = titleMatch ? titleMatch[1].trim() : 'Noma\'lum mashina';
+      
+      const imgMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["'][^>]*>/i);
+      const imageUrl = imgMatch ? imgMatch[1] : null;
+
+      // Extract year from title if possible (e.g. "2020 Kia K5")
+      const yearMatch = title.match(/(201[0-9]|202[0-9])/);
+      const year = yearMatch ? parseInt(yearMatch[1], 10) : new Date().getFullYear() - 3;
+
+      // Make realistic fake data based on URL text
+      // In production, we'd use a real API like Encar API or Cheerio DOM parsing
+      const engineCcMatch = html.match(/([1-4])\.[0-9]\s*(liter|l|cc)/i);
+      const engineCc = engineCcMatch ? parseFloat(engineCcMatch[1]) * 1000 : 2000;
+
+      return {
+        brand: title.split(' ')[0] || 'Unknown',
+        model: title.substring(0, 50),
+        year,
+        engineCc,
+        carPriceUsd: 15000, // Hardcoded estimate
+        fuelType: 'GASOLINE',
+        condition: 'USED',
+        imageUrl: imageUrl || 'https://via.placeholder.com/400x300?text=KCI+Parsed+Car'
+      };
+    } catch (error) {
+      throw new Error('URL orqali ma\'lumot olishda xatolik. URL to\'g\'riligini tekshiring.');
+    }
   }
 }

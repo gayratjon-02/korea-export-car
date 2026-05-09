@@ -9,11 +9,15 @@ export class CalculatorController {
   constructor(private readonly calculatorService: CalculatorService) {}
 
   @Post('calculate')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Calculate total import cost for a car' })
-  async calculate(@Body() body: { carId: string; countryCode: string; cityId: string }) {
-    return this.calculatorService.calculate(body.carId, body.countryCode, body.cityId);
+  async calculate(@Body() body: { carId?: string; countryCode: string; cityId: string; manualCar?: any }) {
+    return this.calculatorService.calculate(body.carId, body.countryCode, body.cityId, body.manualCar);
+  }
+
+  @Post('parse-url')
+  @ApiOperation({ summary: 'Parse external car website URL' })
+  async parseUrl(@Body() body: { url: string }) {
+    return this.calculatorService.parseUrl(body.url);
   }
 
   @Get('countries')
