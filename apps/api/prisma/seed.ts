@@ -54,15 +54,18 @@ async function main() {
     if (!country) continue;
 
     for (const cityName of cities) {
-      await prisma.city.upsert({
-        where: { id: `${code}-${cityName}` },
-        update: {},
-        create: {
-          countryId: country.id,
-          name: cityName,
-          nameUz: cityName,
-        },
+      const existing = await prisma.city.findFirst({
+        where: { countryId: country.id, name: cityName },
       });
+      if (!existing) {
+        await prisma.city.create({
+          data: {
+            countryId: country.id,
+            name: cityName,
+            nameUz: cityName,
+          },
+        });
+      }
     }
   }
   console.log('✅ Cities created');
