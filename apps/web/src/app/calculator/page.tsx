@@ -137,15 +137,15 @@ function CalculatorContent() {
           {/* Form Section */}
           <div className="calc-form-section card">
             
-            <div className="calc-tabs flex border-b border-gray-100">
+            <div className="calc-tabs flex gap-2 p-2 bg-gray-50 border-b border-gray-100 rounded-t-lg">
               <button 
-                className={`flex-1 py-4 text-sm font-bold border-b-2 transition-all ${activeTab === 'katalog' ? 'border-primary text-primary' : 'border-transparent text-muted hover:bg-gray-50'}`}
+                className={`flex-1 py-3 text-sm font-bold rounded-md transition-all ${activeTab === 'katalog' ? 'bg-primary text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
                 onClick={() => { setActiveTab('katalog'); setResult(null); setError(''); }}
               >
                 Katalogdan tanlash
               </button>
               <button 
-                className={`flex-1 py-4 text-sm font-bold border-b-2 transition-all ${activeTab === 'url' ? 'border-primary text-primary' : 'border-transparent text-muted hover:bg-gray-50'}`}
+                className={`flex-1 py-3 text-sm font-bold rounded-md transition-all ${activeTab === 'url' ? 'bg-primary text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
                 onClick={() => { setActiveTab('url'); setResult(null); setError(''); }}
               >
                 Boshqa saytdan URL
@@ -251,37 +251,45 @@ function CalculatorContent() {
                   </div>
                 )}
 
-                <div className="h-px bg-gray-100 my-2"></div>
+                <div className="h-px bg-gray-100 my-4"></div>
 
-                <div className="form-group">
-                  <label className="form-label">Qabul qiluvchi davlat</label>
-                  <select 
-                    value={countryCode} 
-                    onChange={e => setCountryCode(e.target.value)}
-                    className="form-select"
-                    required
-                  >
-                    <option value="">Davlatni tanlang</option>
-                    {countries.map(c => (
-                      <option key={c.id} value={c.code}>{c.nameUz || c.name}</option>
-                    ))}
-                  </select>
-                </div>
+                {/* LOCATIONS SECTION (Hidden until car selected) */}
+                <div className={`transition-opacity duration-300 ${(activeTab === 'katalog' && !carId) || (activeTab === 'url' && !parsedCar) ? 'opacity-50 pointer-events-none grayscale' : 'opacity-100'}`}>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">2</div>
+                    <h3 className="font-bold text-lg">Manzilni tanlang</h3>
+                  </div>
 
-                <div className="form-group">
-                  <label className="form-label">Shahar / Bojxona posti</label>
-                  <select 
-                    value={cityId} 
-                    onChange={e => setCityId(e.target.value)}
-                    className="form-select"
-                    disabled={!countryCode || cities.length === 0}
-                    required
-                  >
-                    <option value="">Shaharni tanlang</option>
-                    {cities.map(c => (
-                      <option key={c.id} value={c.id}>{c.nameUz || c.name}</option>
-                    ))}
-                  </select>
+                  <div className="form-group">
+                    <label className="form-label">Qabul qiluvchi davlat</label>
+                    <select 
+                      value={countryCode} 
+                      onChange={e => setCountryCode(e.target.value)}
+                      className="form-select"
+                      required
+                    >
+                      <option value="">Davlatni tanlang</option>
+                      {countries.map(c => (
+                        <option key={c.id} value={c.code}>{c.nameUz || c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">Shahar / Bojxona posti</label>
+                    <select 
+                      value={cityId} 
+                      onChange={e => setCityId(e.target.value)}
+                      className="form-select"
+                      disabled={!countryCode || cities.length === 0}
+                      required
+                    >
+                      <option value="">Shaharni tanlang</option>
+                      {cities.map(c => (
+                        <option key={c.id} value={c.id}>{c.nameUz || c.name}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 {error && (
@@ -294,7 +302,7 @@ function CalculatorContent() {
                 <button 
                   type="submit" 
                   className="btn btn-primary btn-lg w-full mt-4"
-                  disabled={loading || (activeTab === 'url' && !parsedCar)}
+                  disabled={loading || (activeTab === 'katalog' && (!carId || !countryCode || !cityId)) || (activeTab === 'url' && (!parsedCar || !countryCode || !cityId))}
                 >
                   {loading ? 'Hisoblanmoqda...' : 'Hisoblash'} <ArrowRight size={20} />
                 </button>
