@@ -134,7 +134,7 @@ function CalculatorContent() {
       </div>
 
       <div className="container py-12">
-        <div className="calc-grid">
+        <div className={result ? "calc-grid" : "max-w-2xl mx-auto"}>
           {/* Form Section */}
           <div className="calc-form-section premium-card">
             
@@ -359,18 +359,8 @@ function CalculatorContent() {
           </div>
 
           {/* Result Section */}
-          <div className="calc-result-section">
-            {!result ? (
-              <div className="empty-result">
-                <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                  <Calculator size={40} className="text-gray-300" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-400 mb-3 font-outfit">Natija kutilmoqda</h3>
-                <p className="text-gray-400 text-center max-w-xs leading-relaxed">
-                  Chap tomondagi ma'lumotlarni kiritib hisoblash tugmasini bosing. Barcha bojxona va yo'l xarajatlari shu yerda ko'rsatiladi.
-                </p>
-              </div>
-            ) : (
+          {result && (
+            <div className="calc-result-section animate-fade-in">
               <div className="premium-card result-card">
                 <div className="result-header text-center text-white">
                   <div className="relative z-10">
@@ -424,8 +414,8 @@ function CalculatorContent() {
                   </div>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
