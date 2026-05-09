@@ -82,38 +82,38 @@ export default function RegisterPage() {
               </div>
             )}
 
-            <div className="form-group">
-              <label>F.I.SH. yoki Kompaniya</label>
+            <div className="form-group flex flex-col">
+              <label className="form-label">F.I.SH. yoki Kompaniya</label>
               <input 
                 type="text" 
                 value={name}
                 onChange={e => setName(e.target.value)}
                 placeholder={role === UserRole.AGENT ? "Kompaniya nomi" : "To'liq ismingiz"}
-                className="auth-input"
+                className="form-input"
                 required
               />
             </div>
 
-            <div className="form-group">
-              <label>Elektron pochta</label>
+            <div className="form-group flex flex-col">
+              <label className="form-label">Elektron pochta</label>
               <input 
                 type="email" 
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="misol@gmail.com"
-                className="auth-input"
+                className="form-input"
                 required
               />
             </div>
 
-            <div className="form-group">
-              <label>Parol</label>
+            <div className="form-group flex flex-col">
+              <label className="form-label">Parol</label>
               <input 
                 type="password" 
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="Kamida 6 ta belgi"
-                className="auth-input"
+                className="form-input"
                 required
                 minLength={6}
               />
