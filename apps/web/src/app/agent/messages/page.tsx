@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, Send, Image as ImageIcon, Car, User, Clock, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Search, Send, Image as ImageIcon, Car, User, Clock, CheckCircle2, ArrowRight, MessageSquare } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 import { getRooms, getRoomMessages } from '@/lib/api/chat';
 import { formatCurrency } from '@kci/utils';
