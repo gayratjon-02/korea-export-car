@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { UserPlus, AlertCircle } from 'lucide-react';
-import { register as registerApi, setTokens } from '@/lib/api/auth';
+import { register as registerApi, setAuthData } from '@/lib/api/auth';
 import { UserRole } from '@kci/types';
 import '../auth.css';
 
@@ -30,16 +30,14 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const tokens = await registerApi({ name, email, password, role });
-      setTokens(tokens);
+      const response = await registerApi({ name, email, password, role });
+      setAuthData(response);
       
       if (role === UserRole.AGENT) {
-        // Redirect agent to complete profile setup later
-        router.push('/agent/onboarding');
+        window.location.href = '/agent/onboarding';
       } else {
-        router.push('/catalog');
+        window.location.href = '/catalog';
       }
-      router.refresh();
     } catch (err: any) {
       setError(err.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi');
     } finally {

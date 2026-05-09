@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LogIn, AlertCircle } from 'lucide-react';
-import { login, setTokens } from '@/lib/api/auth';
+import { login, setAuthData } from '@/lib/api/auth';
 import '../auth.css';
 
 export default function LoginPage() {
@@ -22,11 +22,13 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const tokens = await login({ email, password });
-      setTokens(tokens);
-      // Optional: fetch user profile here to redirect accordingly
-      router.push('/catalog');
-      router.refresh();
+      const response = await login({ email, password });
+      setAuthData(response);
+      if (response.user?.role === 'AGENT' || response.user?.role === 'ADMIN') {
+        window.location.href = '/agent';
+      } else {
+        window.location.href = '/catalog';
+      }
     } catch (err: any) {
       setError(err.message || 'Kirishda xatolik yuz berdi');
     } finally {
