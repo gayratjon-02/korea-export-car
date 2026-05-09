@@ -5,9 +5,9 @@
 // ---------- Enums ----------
 
 export const UserRole = {
-  USER: 'user',
-  AGENT: 'agent',
-  ADMIN: 'admin',
+  USER: 'USER',
+  AGENT: 'AGENT',
+  ADMIN: 'ADMIN',
 } as const;
 export type UserRole = typeof UserRole[keyof typeof UserRole];
 

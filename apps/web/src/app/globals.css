@@ -76,6 +76,11 @@ button {
   background: none;
 }
 
+input, select, textarea {
+  font-family: inherit;
+  color: var(--text-main);
+}
+
 /* Utilities */
 .container {
   width: 100%;

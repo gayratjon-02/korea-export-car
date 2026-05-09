@@ -71,6 +71,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background-color: var(--bg-main);
+  color: var(--text-main);
   font-size: 0.9375rem;
   transition: all 0.2s;
 }
