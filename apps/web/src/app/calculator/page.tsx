@@ -187,15 +187,15 @@ function CalculatorContent() {
 
                       {/* Dropdown Results */}
                       {searchQuery.length > 2 && !selectedCar && searchAttempted && (
-                        <div className="absolute z-20 w-full mt-2 bg-white border border-gray-100 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
+                        <div className="search-dropdown absolute z-50 w-full mt-2 rounded-xl shadow-2xl max-h-80 overflow-y-auto">
                           {isSearching ? (
-                            <div className="p-4 text-center text-gray-500 font-medium">Qidirilmoqda...</div>
+                            <div className="p-4 text-center text-muted font-medium">Qidirilmoqda...</div>
                           ) : searchResults.length > 0 ? (
                             searchResults.map((car: any) => (
                               <button
                                 key={car.id}
                                 type="button"
-                                className="w-full text-left p-4 hover:bg-gray-50 border-b border-gray-50 flex gap-4 items-center transition-colors"
+                                className="w-full text-left p-4 hover:bg-[var(--bg-main)] border-b border-[var(--border)] flex gap-4 items-center transition-colors"
                                 onClick={() => {
                                   setSelectedCar(car);
                                   setCarId(car.id);
@@ -204,7 +204,7 @@ function CalculatorContent() {
                                   setSearchAttempted(false);
                                 }}
                               >
-                                <div className="w-16 h-12 rounded overflow-hidden bg-gray-100 shrink-0">
+                                <div className="w-16 h-12 rounded overflow-hidden bg-black shrink-0">
                                   <img 
                                     src={car.media?.[0]?.url || 'https://via.placeholder.com/100'} 
                                     alt="Car" 
@@ -212,16 +212,16 @@ function CalculatorContent() {
                                   />
                                 </div>
                                 <div>
-                                  <div className="font-bold text-gray-800">{car.year} {car.brand} {car.model}</div>
-                                  <div className="text-sm text-gray-500 font-medium">{car.engineCc} cc • {formatCurrency(car.priceUsd, 'USD')}</div>
+                                  <div className="font-bold text-[var(--text-main)]">{car.year} {car.brand} {car.model}</div>
+                                  <div className="text-sm text-muted font-medium">{car.engineCc} cc • {formatCurrency(car.priceUsd, 'USD')}</div>
                                 </div>
                               </button>
                             ))
                           ) : (
                             <div className="p-6 text-center">
-                              <div className="text-gray-400 mb-2"><Car size={32} className="mx-auto opacity-50" /></div>
-                              <p className="font-bold text-gray-700">Mashina topilmadi</p>
-                              <p className="text-sm text-gray-500 mt-1">
+                              <div className="text-muted mb-2"><Car size={32} className="mx-auto opacity-50" /></div>
+                              <p className="font-bold text-[var(--text-main)]">Mashina topilmadi</p>
+                              <p className="text-sm text-muted mt-1">
                                 Bunday avtomobil katalogimizda yo'q. "Koreya saytlaridan URL" bo'limidan foydalanib ko'ring.
                               </p>
                             </div>

@@ -59,18 +59,18 @@ export default function HeroSearch() {
 
       {/* Auto-suggest Results Dropdown */}
       {(results.length > 0 || loading || (query.length >= 2 && results.length === 0 && !loading)) && query.length >= 2 && (
-        <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden text-left z-30">
+        <div className="absolute top-full left-0 right-0 mt-3 bg-[var(--bg-card)] rounded-2xl shadow-2xl border border-[var(--border)] overflow-hidden text-left z-50">
           {loading ? (
-            <div className="p-4 text-center text-gray-500 font-medium">Qidirilmoqda...</div>
+            <div className="p-4 text-center text-[var(--text-muted)] font-medium">Qidirilmoqda...</div>
           ) : results.length > 0 ? (
             <div className="flex flex-col">
               {results.map((car) => (
                 <button
                   key={car.id}
-                  className="flex items-center gap-4 p-4 hover:bg-gray-50 border-b border-gray-50 transition-colors last:border-0 w-full text-left"
+                  className="flex items-center gap-4 p-4 hover:bg-[var(--bg-main)] border-b border-[var(--border)] transition-colors last:border-0 w-full text-left"
                   onClick={() => selectCar(car.id)}
                 >
-                  <div className="w-16 h-12 rounded overflow-hidden bg-gray-100 shrink-0">
+                  <div className="w-16 h-12 rounded overflow-hidden bg-black shrink-0">
                     {car.media && car.media[0] ? (
                       <img src={car.media[0].url} alt={car.model} className="w-full h-full object-cover" />
                     ) : (
@@ -78,21 +78,21 @@ export default function HeroSearch() {
                     )}
                   </div>
                   <div className="flex-grow">
-                    <div className="font-bold text-gray-800 text-lg">{car.year} {car.brand} {car.model}</div>
-                    <div className="text-gray-500 text-sm">{car.engineCc} cc • {car.fuelType}</div>
+                    <div className="font-bold text-[var(--text-main)] text-lg">{car.year} {car.brand} {car.model}</div>
+                    <div className="text-[var(--text-muted)] text-sm">{car.engineCc} cc • {car.fuelType}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-extrabold text-primary">{formatCurrency(car.priceUsd, 'USD')}</div>
-                    <div className="text-xs text-accent font-semibold flex items-center justify-end gap-1">Tanlash <ArrowRight size={12}/></div>
+                    <div className="font-extrabold text-[var(--primary)]">{formatCurrency(car.priceUsd, 'USD')}</div>
+                    <div className="text-xs text-[var(--accent)] font-semibold flex items-center justify-end gap-1">Tanlash <ArrowRight size={12}/></div>
                   </div>
                 </button>
               ))}
             </div>
           ) : (
             <div className="p-6 text-center">
-              <div className="text-gray-400 mb-2"><Car size={32} className="mx-auto opacity-50" /></div>
-              <p className="font-bold text-gray-700">Mashina topilmadi</p>
-              <p className="text-sm text-gray-500 mt-1">
+              <div className="text-[var(--text-muted)] mb-2"><Car size={32} className="mx-auto opacity-50" /></div>
+              <p className="font-bold text-[var(--text-main)]">Mashina topilmadi</p>
+              <p className="text-sm text-[var(--text-muted)] mt-1">
                 Afsuski, ushbu nomdagi avtomobil hozircha bizning katalogda yo'q. Boshqa so'z bilan qidirib ko'ring.
               </p>
             </div>

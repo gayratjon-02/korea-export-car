@@ -57,6 +57,12 @@
   font-weight: 500;
 }
 
+.search-dropdown {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xl);
+}
+
 .calc-grid {
   display: grid;
   grid-template-columns: 1fr;
