@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: kci_postgres_prod
+    restart: always
+    ports:
+      - '5435:5432' # Unique port for host machine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: korea_car_import
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    networks:
+      - kci_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: kci_redis_prod
+    restart: always
+    ports:
+      - '6385:6379' # Unique port for host machine
+    volumes:
+      - redis_data_prod:/data
+    networks:
+      - kci_network
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: kci_api_prod
+    restart: always
+    ports:
+      - '4005:4005' # Unique port for host machine
+    environment:
+      - PORT=4005
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/korea_car_import?schema=public
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=super_secret_jwt_key_for_kci
+      - NEXT_PUBLIC_API_URL=http://178.62.195.203:4005/api/v1
+      - FRONTEND_URL=http://178.62.195.203:3005
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - kci_network
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: kci_web_prod
+    restart: always
+    ports:
+      - '3005:3005' # Unique port for host machine
+    environment:
+      - PORT=3005
+      - NEXT_PUBLIC_API_URL=http://178.62.195.203:4005/api/v1
+    depends_on:
+      - api
+    networks:
+      - kci_network
+
+volumes:
+  postgres_data_prod:
+  redis_data_prod:
+
+networks:
+  kci_network:
+    driver: bridge
