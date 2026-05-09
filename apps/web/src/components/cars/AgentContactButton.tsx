@@ -25,7 +25,7 @@ export default function AgentContactButton({ agentId, carId }: Props) {
     try {
       setLoading(true);
       const room = await createRoom({ agentId, carId });
-      router.push(`/messages`);
+      router.push(`/profile/messages`);
     } catch (err: any) {
       alert(err.message || "Xatolik yuz berdi");
       setLoading(false);
