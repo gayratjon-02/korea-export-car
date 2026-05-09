@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Car, PlusCircle, MessageSquare, User, LogOut, Menu, X, ShieldCheck } from 'lucide-react';
-import { removeTokens } from '@/lib/api/auth';
+import { clearTokens } from '@/lib/api/auth';
 import './agent.css';
 
 export default function AgentLayout({ children }: { children: React.ReactNode }) {
@@ -13,7 +13,7 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
-    removeTokens();
+    clearTokens();
     router.push('/login');
     router.refresh();
   };
