@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { User, MessageSquare, Heart, LogOut, ChevronRight } from 'lucide-react';
-import { removeTokens } from '@/lib/api/auth';
+import { clearTokens } from '@/lib/api/auth';
 import { IUser } from '@kci/types';
 
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
@@ -24,7 +24,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   }, []);
 
   const handleLogout = () => {
-    removeTokens();
+    clearTokens();
     localStorage.removeItem('user');
     window.location.href = '/login';
   };
