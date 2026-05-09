@@ -40,4 +40,4 @@ ENV PORT=4005
 
 EXPOSE 4005
 
-CMD ["npm", "run", "start:prod"]
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss && npm run start:prod"]
