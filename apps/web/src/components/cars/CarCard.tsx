@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ICar, FuelType, CarCondition } from '@kci/types';
-import { formatUsd } from '@kci/utils';
+import { formatCurrency } from '@kci/utils';
 import './CarCard.css';
 
 interface CarCardProps {
@@ -51,7 +51,7 @@ export default function CarCard({ car }: CarCardProps) {
         </h3>
         
         <div className="car-price">
-          {formatUsd(car.priceUsd)}
+          {formatCurrency(car.priceUsd, 'USD')}
         </div>
         
         <div className="car-specs">

@@ -15,7 +15,7 @@ export async function getCars(params?: Record<string, string | number>) {
     throw new Error('Failed to fetch cars');
   }
   
-  return res.json() as Promise<{ data: { items: ICar[], total: number } }>;
+  return res.json() as Promise<{ items: ICar[], total: number }>;
 }
 
 export async function getCarById(id: string) {

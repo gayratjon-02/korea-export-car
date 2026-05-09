@@ -3,14 +3,16 @@ import CarCard from '@/components/cars/CarCard';
 import './catalog.css';
 import { Search, Filter } from 'lucide-react';
 
+import { ICar } from '@kci/types';
+
 export default async function CatalogPage() {
-  let cars = [];
+  let cars: ICar[] = [];
   let total = 0;
   
   try {
     const res = await getCars();
-    cars = res.data.items;
-    total = res.data.total;
+    cars = res.items;
+    total = res.total;
   } catch (error) {
     console.error('Error fetching cars:', error);
   }

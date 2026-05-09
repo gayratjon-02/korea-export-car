@@ -6,7 +6,7 @@ import { CarsService } from './cars.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { Role } from '@prisma/client';
+import { UserRole } from '@kci/types';
 
 @ApiTags('cars')
 @Controller('cars')
@@ -39,7 +39,7 @@ export class CarsController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.AGENT)
+  @Roles(UserRole.AGENT)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new car listing (Agent only)' })
   async create(@Req() req: any, @Body() body: any) {
@@ -49,7 +49,7 @@ export class CarsController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.AGENT)
+  @Roles(UserRole.AGENT)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a car listing (Agent only)' })
   async update(@Param('id') id: string, @Req() req: any, @Body() body: any) {
@@ -58,7 +58,7 @@ export class CarsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.AGENT)
+  @Roles(UserRole.AGENT)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a car listing (Agent only)' })
   async delete(@Param('id') id: string, @Req() req: any) {
@@ -67,7 +67,7 @@ export class CarsController {
 
   @Post(':id/media')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.AGENT)
+  @Roles(UserRole.AGENT)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Add media to car (Agent only)' })
   async addMedia(@Param('id') id: string, @Req() req: any, @Body() body: any) {
@@ -76,7 +76,7 @@ export class CarsController {
 
   @Get('agent/my-cars')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.AGENT)
+  @Roles(UserRole.AGENT)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get my cars (Agent only)' })
   async getMyCars(@Req() req: any) {

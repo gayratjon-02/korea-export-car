@@ -4,51 +4,58 @@
 
 // ---------- Enums ----------
 
-export enum UserRole {
-  USER = 'user',
-  AGENT = 'agent',
-  ADMIN = 'admin',
-}
+export const UserRole = {
+  USER: 'user',
+  AGENT: 'agent',
+  ADMIN: 'admin',
+} as const;
+export type UserRole = typeof UserRole[keyof typeof UserRole];
 
-export enum CarCondition {
-  NEW = 'new',
-  USED = 'used',
-}
+export const CarCondition = {
+  NEW: 'new',
+  USED: 'used',
+} as const;
+export type CarCondition = typeof CarCondition[keyof typeof CarCondition];
 
-export enum FuelType {
-  GASOLINE = 'gasoline',
-  DIESEL = 'diesel',
-  HYBRID = 'hybrid',
-  ELECTRIC = 'electric',
-  LPG = 'lpg',
-}
+export const FuelType = {
+  GASOLINE: 'gasoline',
+  DIESEL: 'diesel',
+  HYBRID: 'hybrid',
+  ELECTRIC: 'electric',
+  LPG: 'lpg',
+} as const;
+export type FuelType = typeof FuelType[keyof typeof FuelType];
 
-export enum MediaType {
-  IMAGE = 'image',
-  VIDEO = 'video',
-}
+export const MediaType = {
+  IMAGE: 'image',
+  VIDEO: 'video',
+} as const;
+export type MediaType = typeof MediaType[keyof typeof MediaType];
 
-export enum MessageType {
-  TEXT = 'text',
-  IMAGE = 'image',
-  AUDIO = 'audio',
-  SYSTEM = 'system',
-}
+export const MessageType = {
+  TEXT: 'text',
+  IMAGE: 'image',
+  AUDIO: 'audio',
+  SYSTEM: 'system',
+} as const;
+export type MessageType = typeof MessageType[keyof typeof MessageType];
 
-export enum CustomsRateStatus {
-  DRAFT = 'draft',
-  APPROVED = 'approved',
-  REJECTED = 'rejected',
-}
+export const CustomsRateStatus = {
+  DRAFT: 'draft',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+} as const;
+export type CustomsRateStatus = typeof CustomsRateStatus[keyof typeof CustomsRateStatus];
 
-export enum CountryCode {
-  UZ = 'UZ', // O'zbekiston
-  KZ = 'KZ', // Qozog'iston
-  KG = 'KG', // Qirg'iziston
-  TJ = 'TJ', // Tojikiston
-  RU = 'RU', // Rossiya
-  AE = 'AE', // Dubay (BAA)
-}
+export const CountryCode = {
+  UZ: 'UZ', // O'zbekiston
+  KZ: 'KZ', // Qozog'iston
+  KG: 'KG', // Qirg'iziston
+  TJ: 'TJ', // Tojikiston
+  RU: 'RU', // Rossiya
+  AE: 'AE', // Dubay (BAA)
+} as const;
+export type CountryCode = typeof CountryCode[keyof typeof CountryCode];
 
 // ---------- User Types ----------
 
