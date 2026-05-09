@@ -7,6 +7,7 @@ export class CarsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(filters: {
+    agentId?: string;
     brand?: string;
     model?: string;
     yearFrom?: number;
@@ -28,6 +29,7 @@ export class CarsService {
 
     const where: Prisma.CarWhereInput = {
       isActive: true,
+      ...(filters.agentId && { agentId: filters.agentId }),
       ...(filters.brand && { brand: { contains: filters.brand, mode: 'insensitive' as any } }),
       ...(filters.model && { model: { contains: filters.model, mode: 'insensitive' as any } }),
       ...(filters.yearFrom && { year: { gte: filters.yearFrom } }),

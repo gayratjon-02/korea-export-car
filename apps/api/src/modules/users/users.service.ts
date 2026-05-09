@@ -43,4 +43,24 @@ export class UsersService {
 
     return { user, agent };
   }
+  async getAgents() {
+    return this.prisma.agent.findMany({
+      where: { isApproved: true },
+      include: {
+        user: { select: { id: true, name: true, avatarUrl: true, email: true, phone: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async getAgentById(id: string) {
+    const agent = await this.prisma.agent.findUnique({
+      where: { id },
+      include: {
+        user: { select: { id: true, name: true, avatarUrl: true, email: true, phone: true } },
+      },
+    });
+    if (!agent) throw new NotFoundException('Agent topilmadi');
+    return agent;
+  }
 }
